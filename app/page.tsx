@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 
 export default function Home() {
   const handleLocalChange = (l:string) => {
-    // push("/", undefined, { locale: l });
   };
   return (
     <>
@@ -15,23 +14,10 @@ export default function Home() {
           <p>WELCOME TO APEX SHOPPING</p>
           <span>cool</span>
         </div>
-        <div className=" w-11/12 absolute top-64 text-xl font-bold container min-h-screen bg-purple flex flex-col items-center justify-center"></div>
+        <div className=" w-11/12 absolute top-64 text-xl font-bold container min-h-screen bg-purple flex flex-col items-center justify-center">
+          haha
+        </div>
       </div>
     </>
   );
-  // const { data: session } = useSession();
-  // if (session) {
-  //   return (
-  //     <>
-
-  //       <button onClick={() => signOut()}>Sign out</button>
-  //     </>
-  //   );
-  // }
-  // return (
-  //   <>
-  //     Not signed in <br />
-  //     <button onClick={() => signIn()}>Sign in</button>
-  //   </>
-  // );
 }

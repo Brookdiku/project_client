@@ -1,4 +1,5 @@
 import "./globals.css";
+import 'remixicon/fonts/remixicon.css'
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Provider from "./Provider";
@@ -20,8 +21,7 @@ export default function RootLayout({
         <Provider>
           <body className={inter.className}>
             <UIProvider >
-            <main className="">
-              
+            <main>
             {children}
             </main>
             </UIProvider>
