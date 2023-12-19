@@ -1,42 +1,42 @@
-import { Link } from "@nextui-org/react";
-import React from "react";
+import { Link, Button, Tooltip } from "@nextui-org/react";
+import React, { useState } from "react";
 
-export default function SideBar() {
-  return (
-    <>
-    <div className=" fixed left-0 top-0 w-64 h-full  p-4 z-50 sidebar-menu transition-transform shadow-md shadow-black/5">
-        <a href="/" className="flex items-center pb-4 border-b border-b-gray-800">
-            <img src="https://placehold.co/32x32" alt="" className="w-8 h-8 rounded object-cover"/>
-            <span className="text-lg font-bold ml-3">Logo</span>
-        </a>
-        <ul className="mt-4">
-            <li className="mb-1 group active">
-                <Link href="/admin" className="flex items-center py-2 px-4  rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <i className="ri-home-2-line mr-3 text-lg"></i>
-                    <span className="text-sm">Dashboard</span>
-                </Link>
-            </li>
-            <li className="mb-1 group active">
-                <Link href="/admin/products" className="flex items-center py-2 px-4  rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <i className="ri-home-2-line mr-3 text-lg"></i>
-                    <span className="text-sm">Products</span>
-                </Link>
-            </li>
-            <li className="mb-1 group active">
-                <Link href="/admin/products" className="flex items-center py-2 px-4  rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <i className="ri-home-2-line mr-3 text-lg"></i>
-                    <span className="text-sm">Category</span>
-                </Link>
-            </li>
-            <li className="mb-1 group active">
-                <Link href="/admin/products" className="flex items-center py-2 px-4  rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <i className="ri-home-2-line mr-3 text-lg"></i>
-                    <span className="text-sm">Sub Category</span>
-                </Link>
-            </li>
-        </ul>
-    </div>
-    <div className="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay"></div>
-    </>
-  );
+export default function SideBar({ isMenuToggled }) {
+    //className={`fixed left-0 top-0  bg-blue-600 h-full p-4  sidebar-menu transition-transform shadow-md shadow-black/5`}
+    return (
+        <>
+            <div className={`w-full p-4 flex flex-col h-full ${isMenuToggled ? "items-center" : "items-start"}`} >
+                <div className=" flex ">
+                    <img src="https://placehold.co/32x32" alt="" className="w-8 h-8 rounded object-cover" />
+                    {!isMenuToggled ? <span className="text-lg font-bold ml-3" >Logo</span> : <></>}
+                </div>
+                <div className="flex flex-col gap-2 mt-5 w-full items-center">
+
+                    <Button isIconOnly={!isMenuToggled ? false : true} variant="flat" className={`${!isMenuToggled ? "w-full justify-start" : "justify-center"} flex items-center rounded-md`} >
+
+                        <a href="/admin" className="text-left">
+                            {isMenuToggled ? <Tooltip placement="right" content="Dashboard" className="p-4">
+                                <i className="ri-dashboard-line text-lg"></i>
+                            </Tooltip> : <i className="ri-dashboard-line text-xl"></i>}
+                            {!isMenuToggled ? <span className="text-sm ml-3 ">Dashboard</span> : <></>}
+                        </a>
+
+
+                    </Button>
+                    <Button isIconOnly={!isMenuToggled ? false : true} variant="flat" className={`${!isMenuToggled ? "w-full justify-start" : "justify-center"} flex items-center rounded-md`} >
+                        <a href="/admin/products" className="text-left">
+                            <i className="ri-store-line text-xl"></i>
+                            {!isMenuToggled ? <span className="text-sm ml-3 ">Products</span> : <></>}
+                        </a>
+                    </Button>
+                    <Button isIconOnly={!isMenuToggled ? false : true} variant="flat" className={`${!isMenuToggled ? "w-full justify-start" : "justify-center"} flex items-center rounded-md`} >
+                        <a href="/admin/categories" className="text-left">
+                            <i className="ri-menu-search-line text-xl"></i>
+                            {!isMenuToggled ? <span className="text-sm ml-3 ">category</span> : <></>}
+                        </a>
+                    </Button>
+                </div>
+            </div >
+        </>
+    );
 }

@@ -1,3 +1,4 @@
+
 import "./globals.css";
 import 'remixicon/fonts/remixicon.css'
 import type { Metadata } from "next";
@@ -17,9 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
         <Provider>
-          <body className={inter.className}>
+          <body  className={inter.className}>
             <UIProvider >
             <main>
             {children}
