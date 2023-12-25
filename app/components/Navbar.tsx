@@ -17,7 +17,7 @@ import {
   NavbarMenuToggle,
   Input,
 } from "@nextui-org/react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -60,7 +60,7 @@ export default function AppNavBar({handleLocalChange}) {
         </div>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      {/* <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link color="foreground" href="#">
             Home
@@ -76,7 +76,7 @@ export default function AppNavBar({handleLocalChange}) {
             About
           </Link>
         </NavbarItem>
-      </NavbarContent>
+      </NavbarContent> */}
 
       <NavbarMenu>
         {menuItems.map((item, index) => (
@@ -138,9 +138,9 @@ export default function AppNavBar({handleLocalChange}) {
       ) : (
         <NavbarContent className="hidden sm:flex gap-4" justify="end">
           <NavbarItem className="hidden lg:flex">
-            <Button onPress={() => signIn()} variant="bordered">
+            <Link href="/auth/signin" >
               Sign In
-            </Button>
+            </Link>
           </NavbarItem>
           <NavbarItem>
             <Button variant="flat">Sign Out</Button>
@@ -172,8 +172,6 @@ export default function AppNavBar({handleLocalChange}) {
             <DropdownItem key="ሶማልኛ">ሶማልኛ</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        <Button onPress={handleLocalChange("en")}>english</Button>
-        <Button onPress={handleLocalChange("am")}>amharic</Button>
       </NavbarContent>
     </Navbar>
   );

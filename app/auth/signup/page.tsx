@@ -1,9 +1,11 @@
-import React from 'react'
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import SignUpForm from "./SignUpForm";
 
-const page = () => {
-  return (
-    <div>signup</div>
-  )
+export default async function Page() {
+  const session = await getServerSession();
+  if (session) {
+    redirect('/');
+  }
+  return <SignUpForm/>
 }
-
-export default page
