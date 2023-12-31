@@ -5,7 +5,7 @@
 //     function middleware(req: NextRequestWithAuth) {
 //         const isLoggedIn = req.nextauth.token;
 //         console.log("logged in "+isLoggedIn?.role);
-        
+
 //         if (isLoggedIn && (req.nextUrl.pathname.startsWith("/auth/signin") || req.nextUrl.pathname.startsWith("/auth/signup"))) {
 //             return NextResponse.redirect(new URL("/", req.url))
 //         }
@@ -41,14 +41,12 @@ export default withAuth(
     }
   },
   {
-    pages: { signIn: '/auth/signin' },
+    pages: { signIn: '/auth/signin', error: "/error" },
+
     callbacks: {
-      authorized: async ({ token }) => {
-        console.log('user is authorized');
-        return true;
+      authorized: ({ token }) => !!token
       },
     },
-  },
 );
 
 export const config = {

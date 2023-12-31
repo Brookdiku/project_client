@@ -1,240 +1,356 @@
-"use client"
-import React, { useEffect, useLayoutEffect, useState } from "react"
-import AdminLayout from "../AdminLayout"
-import { Button, Chip, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@nextui-org/react"
-import Toast from "@/app/components/Toast"
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth"
-import { useSession } from "next-auth/react"
-interface CategoryType {
-  id: number,
-  categoryTitle: string,
-  categoryDescription: string,
-  createdAt: string
-}
+"use client";
+import {
+  Pagination,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  getKeyValue,
+} from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
+import AdminLayout from "../AdminLayout";
+import { useSession } from "next-auth/react";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+export const users = [
+  {
+    key: "1",
+    name: "Tony Reichert",
+    role: "CEO",
+    status: "Active",
+  },
+  {
+    key: "2",
+    name: "Zoey Lang",
+    role: "Technical Lead",
+    status: "Paused",
+  },
+  {
+    key: "3",
+    name: "Jane Fisher",
+    role: "Senior Developer",
+    status: "Active",
+  },
+  {
+    key: "4",
+    name: "William Howard",
+    role: "Community Manager",
+    status: "Vacation",
+  },
+  {
+    key: "5",
+    name: "Emily Collins",
+    role: "Marketing Manager",
+    status: "Active",
+  },
+  {
+    key: "6",
+    name: "Brian Kim",
+    role: "Product Manager",
+    status: "Active",
+  },
+  {
+    key: "7",
+    name: "Laura Thompson",
+    role: "UX Designer",
+    status: "Active",
+  },
+  {
+    key: "8",
+    name: "Michael Stevens",
+    role: "Data Analyst",
+    status: "Paused",
+  },
+  {
+    key: "9",
+    name: "Sophia Nguyen",
+    role: "Quality Assurance",
+    status: "Active",
+  },
+  {
+    key: "10",
+    name: "James Wilson",
+    role: "Front-end Developer",
+    status: "Vacation",
+  },
+  {
+    key: "11",
+    name: "Ava Johnson",
+    role: "Back-end Developer",
+    status: "Active",
+  },
+  {
+    key: "12",
+    name: "Isabella Smith",
+    role: "Graphic Designer",
+    status: "Active",
+  },
+  {
+    key: "13",
+    name: "Oliver Brown",
+    role: "Content Writer",
+    status: "Paused",
+  },
+  {
+    key: "14",
+    name: "Lucas Jones",
+    role: "Project Manager",
+    status: "Active",
+  },
+  {
+    key: "15",
+    name: "Grace Davis",
+    role: "HR Manager",
+    status: "Active",
+  },
+  {
+    key: "16",
+    name: "Elijah Garcia",
+    role: "Network Administrator",
+    status: "Active",
+  },
+  {
+    key: "17",
+    name: "Emma Martinez",
+    role: "Accountant",
+    status: "Vacation",
+  },
+  {
+    key: "18",
+    name: "Benjamin Lee",
+    role: "Operations Manager",
+    status: "Active",
+  },
+  {
+    key: "19",
+    name: "Mia Hernandez",
+    role: "Sales Manager",
+    status: "Paused",
+  },
+  {
+    key: "20",
+    name: "Daniel Lewis",
+    role: "DevOps Engineer",
+    status: "Active",
+  },
+  {
+    key: "21",
+    name: "Amelia Clark",
+    role: "Social Media Specialist",
+    status: "Active",
+  },
+  {
+    key: "22",
+    name: "Jackson Walker",
+    role: "Customer Support",
+    status: "Active",
+  },
+  {
+    key: "23",
+    name: "Henry Hall",
+    role: "Security Analyst",
+    status: "Active",
+  },
+  {
+    key: "24",
+    name: "Charlotte Young",
+    role: "PR Specialist",
+    status: "Paused",
+  },
+  {
+    key: "25",
+    name: "Liam King",
+    role: "Mobile App Developer",
+    status: "Active",
+  },
+];
+
 const page = () => {
-  const axiosAuth = useAxiosAuth()
-  const [categories, setCategories] = useState<[CategoryType]>();
-  const [type, setType] = useState<string>()
-  const [message, setMessage] = useState<string>()
-  const [flag, setFlag] = useState(false);
-  const [updateCatId, setUpdateCatId] = useState<number>()
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isFetching, setIsFetching] = useState<boolean>(false)
-  const [categoryTitle, setCategoryTitle] = useState("")
-  const [categoryDescription, setCategoryDescrtiption] = useState("")
   const { data: session } = useSession();
-  const clear = () => {
-    setCategoryDescrtiption("")
-    setCategoryTitle("")
-    setUpdateCatId(undefined)
-  }
-  const handleNew = () => {
-    clear();
-    onOpen();
-  }
-  const createCategory = async () => {
-    const res = await axiosAuth.post("/categories", {
-      categoryTitle: categoryTitle,
-      categoryDescription: categoryDescription,
-    },)
-    if (res.status == 201) {
-      setFlag(true);
-      setMessage("Category created.")
-      setType("success")
-    } else if (res.status == 401) {
-      setMessage("Not authorized.")
-      setType("warning")
-    } else if (res.status == 403) {
-      setMessage("Forbidden.")
-      setType("danger")
-    }
-    setTimeout(() => {
-      setFlag(false)
-    }, 1000);
-    clear();
-    onClose();
-  }
-  const updateCategory = async () => {
-    const res = await axiosAuth.put(`/categories/${updateCatId}`, {
-      categoryTitle: categoryTitle,
-      categoryDescription: categoryDescription,
-    },)
-    if (res.status == 200) {
-      setFlag(true);
-      setMessage("Category Updated.")
-      setType("success")
-    }
-    setTimeout(() => {
-      setFlag(false)
-    }, 1000);
-    clear()
-    onClose();
-  }
-  const getCategories = async () => {
-    const res = await axiosAuth.get("/categories")
-    if (res.status == 200) setCategories(res.data)
-  }
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [categories, setCategories] = useState<[CategoryType]>();
+  const axiosAuth = useAxiosAuth();
+  //   const getCategories = async () => {
+  //     const res = await axiosAuth.get("/categories");
+  //     if (res.status == 200) setCategories(res.data);
+  //   };
   const deleteCategory = async (id: number) => {
-    const res = await axiosAuth.delete(`/categories/${id}`)
+    const res = await axiosAuth.delete(`/categories/${id}`);
     if (res.status == 200) {
     }
-  }
-
-  const handleUpdate = async (category: CategoryType) => {
-    setCategoryTitle(category.categoryTitle);
-    setCategoryDescrtiption(category.categoryDescription);
-    setUpdateCatId(category.id)
-    onOpen();
-  }
+  };
+  const handleUpdate = async (category: CategoryType) => {};
   useEffect(() => {
-    setIsFetching(true)
-    if (session?.user?.token?.accessToken){
-      getCategories();
-    }
-    setIsFetching(false)
-  }, [session,categories])
-  //fetch categories
-  // useEffect(() => {
-  //   if (session?.user?.token?.accessToken) getCategories();
-  // }, [categories,session])
-  const columns = [
-    { name: "TITLE", uid: "categoryTitle" },
-    { name: "DESCRIPTION", uid: "categoryDescription" },
-    { name: "CREATED", uid: "createdAt" },
-    { name: "ACTIONS", uid: "actions" },
-  ]
+    const fetchData = async () => {
+      setIsFetching(true);
+      if (session?.user?.token?.accessToken) {
+        try {
+          const res = await axiosAuth.get("/categories");
+          if (res.status === 200) {
+            setCategories(res.data);
+          }
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        } finally {
+          setIsFetching(false);
+        }
+      }
+    };
+    fetchData();
+  }, [session]);
 
-  // type Category = typeof categories[0];
-  const renderCell = React.useCallback((category: CategoryType, columnKey: React.Key) => {
-    const cellValue = category[columnKey as keyof CategoryType];
-    switch (columnKey) {
-      case "categoryTitle":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{category.categoryTitle}</p>
-          </div>
-        );
-      case "categoryDescription":
-        return (
-          <p>
-            {cellValue}
-          </p>
-        );
-      case "createdAt":
-        return (
-          <Chip className="capitalize" size="sm" variant="flat">
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <i className="ri-eye-line"></i>
-              </span>
-            </Tooltip>
-            <Tooltip content="Edit category">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                <i className="ri-pencil-line" onClick={() => { handleUpdate(category) }}></i>
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete category" >
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                <i className="ri-delete-bin-line" onClick={() => deleteCategory(category.id)}></i>
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 10;
+  const pages = Math.ceil((categories?.length || 1) / rowsPerPage);
+  const items = React.useMemo(() => {
+    if (!categories) {
+      return [];
     }
-  }, []);
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return categories.slice(start, end);
+  }, [page, categories]);
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-4 h-screen">
-        <Toast message={message} type={type} flag={flag} />
-        <div className="h-10 w-full rounded-md flex justify-end ">
-          <Button color="primary" variant="solid" onPress={() => handleNew()}>
-            <i className="ri-add-line"></i> <span> Add Categroy</span>
-          </Button>
-          {/* start modal*/}
-          <Modal
-            backdrop="opaque"
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            classNames={{
-              backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
-            }}
-          >
-            <ModalContent>
-              <>
-                <ModalHeader className="flex flex-col gap-1">Add Category</ModalHeader>
-                <ModalBody>
-
-                  <Input
-                    key="category name"
-                    type="text"
-                    label="Category Name"
-                    labelPlacement="outside"
-                    placeholder="Category name"
-                    value={categoryTitle}
-                    onChange={(x) => setCategoryTitle(x.target.value)}
-                  />
-                  <Input
-                    key="product descritprion"
-                    type="text"
-                    label="Category Description"
-                    labelPlacement="outside"
-                    placeholder="description"
-                    description="Short and precise"
-                    value={categoryDescription}
-                    onChange={(x) => setCategoryDescrtiption(x.target.value)}
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                  </Button>
-                  <Button color="primary" onPress={() => updateCatId === undefined ? createCategory() : updateCategory()}>
-                    {updateCatId !== undefined ? "Update" : "Create"}
-                  </Button>
-                </ModalFooter>
-              </>
-            </ModalContent>
-          </Modal>
+      {isFetching ? (
+        <div className="w-full h-full flex justify-center items-center">
+          <Spinner />
         </div>
-        <div className="h-full flex justify-center">
-
-
-          {
-            !isFetching && categories?.length === 0 ? <div className="flex h-full w-full justify-center items-center "><p className="text-3xl">No Recored Found</p></div> :
-              !isFetching && categories?.length > 0 ?
-                <Table aria-label="Example table with custom cells">
-                  <TableHeader columns={columns}>
-                    {(column) => (
-                      <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
-                        {column.name}
-                      </TableColumn>
-                    )}
-                  </TableHeader>
-
-                  <TableBody items={categories}>
-                    {(item) => (
-                      <TableRow key={item.id}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-                : <Spinner />
-          }
-
-        </div>
-      </div>
+      ) : (
+        <>
+          {categories?.length === 0 && <p>No records found.</p>}
+          {categories && categories.length > 0 && (
+            // <Table
+            //   aria-label="Example table with client side pagination"
+            //   bottomContent={
+            //     <div className="flex w-full justify-center">
+            //       <Pagination
+            //         isCompact
+            //         showControls
+            //         showShadow
+            //         color="primary"
+            //         page={page}
+            //         total={pages}
+            //         initialPage={1}
+            //         onChange={(page) => setPage(page)}
+            //       />
+            //     </div>
+            //   }
+            //   classNames={{
+            //     wrapper: "min-h-[222px]",
+            //   }}
+            // >
+            //   <TableHeader>
+            //     <TableColumn key="categoryTitle">Title</TableColumn>
+            //     <TableColumn key="categoryDescription">Description</TableColumn>
+            //     <TableColumn key="actoins">Action</TableColumn>
+            //   </TableHeader>
+            //   <TableBody items={items}>
+            //     {(item) => (
+            //       <TableRow key={item.id}>
+            //         <TableCell>{item.categoryTitle}</TableCell>
+            //         <TableCell>{item.categoryDescription}</TableCell>
+            //         <TableCell>
+            //           {/* Edit Button */}
+            //           <Tooltip content="Edit category" >
+            //             <span className="text-lg text-default-400 cursor-pointer active:opacity-50 mr-5">
+            //               <i
+            //                 className="ri-pencil-line"
+            //                 onClick={() => {
+            //                   handleUpdate(item);
+            //                 }}
+            //               ></i>
+            //             </span>
+            //           </Tooltip>
+            //           {/* Delete Button */}
+            //           <Tooltip color="danger" content="Delete category">
+            //             <span className="text-lg text-danger cursor-pointer active:opacity-50">
+            //               <i
+            //                 className="ri-delete-bin-line"
+            //                 onClick={() => deleteCategory(item.id)}
+            //               ></i>
+            //             </span>
+            //           </Tooltip>
+            //         </TableCell>
+            //       </TableRow>
+            //     )}
+            //   </TableBody>
+            // </Table>
+            <Table
+              aria-label="Example table with client side pagination"
+                bottomContent={
+                  <div className="flex w-full justify-center">
+                    <Pagination
+                      isCompact
+                      showControls
+                      showShadow
+                      color="primary"
+                      page={page}
+                      total={pages}
+                      initialPage={1}
+                      onChange={(page) => setPage(page)}
+                    />
+                  </div>
+                }
+                classNames={{
+                  wrapper: "min-h-[222px]",
+                }}
+            
+            >
+              
+              <TableHeader>
+                <TableColumn key="categoryTitle" className="lg:w-1/4">
+                  Title
+                </TableColumn>
+                <TableColumn key="categoryDescription" className="lg:w-2/4">
+                  Description
+                </TableColumn>
+                <TableColumn key="actions" className="lg:w-1/4">
+                  Action
+                </TableColumn>
+              </TableHeader>
+              <TableBody items={items}>
+                {(item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="lg:w-1/4">
+                      {item.categoryTitle}
+                    </TableCell>
+                    <TableCell className="lg:w-2/4">
+                      {item.categoryDescription}
+                    </TableCell>
+                    <TableCell className="lg:w-1/4">
+                      {/* Edit Button */}
+                      <Tooltip content="Edit category">
+                        <span className="text-lg text-default-400 cursor-pointer active:opacity-50 mr-5">
+                          <i
+                            className="ri-pencil-line"
+                            onClick={() => {
+                              handleUpdate(item);
+                            }}
+                          ></i>
+                        </span>
+                      </Tooltip>
+                      {/* Delete Button */}
+                      <Tooltip color="danger" content="Delete category">
+                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                          <i
+                            className="ri-delete-bin-line"
+                            onClick={() => deleteCategory(item.id)}
+                          ></i>
+                        </span>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </>
+      )}
     </AdminLayout>
-
-  )
-}
-
-export default page
+  );
+};
+export default page;

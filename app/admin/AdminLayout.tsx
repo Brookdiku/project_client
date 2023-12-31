@@ -1,30 +1,31 @@
-
-import React, { useState } from 'react';
-import SideBar from '../components/SideBar';
-import TopNavBar from '../components/TopNavbar';
-
+import React, { useState } from "react";
+import SideBar from "../components/SideBar";
+import TopNavBar from "../components/TopNavbar";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [ismenuToggled, setIsMenuToggled] = useState<boolean>(false)
+  const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
   const handleToggle = () => {
-    ismenuToggled ? setIsMenuToggled(false) : setIsMenuToggled(true)
-  }
-  // w-80 bg-red-500 md:w-[calc(100%-256px)] md:ml-64 min-h-screen transition-all main
-  // {`${ismenuToggled ? "w-[calc(100%-64px)]" : "w-[calc(100%-256px)]"}`}
+    isMenuToggled ? setIsMenuToggled(false) : setIsMenuToggled(true);
+  };
+
   return (
     <div className=" flex flex-row text-foreground  w-full h-screen bg-background ">
-      <div className={`${ismenuToggled ? "w-16" : "w-64"} h-full `}>
-        <SideBar isMenuToggled={ismenuToggled} />
+      <div
+        className={`dark:bg-black bg-white ${
+          isMenuToggled ? "w-16" : "w-64"
+        } h-full md:relative md:block transition-all duration-300 ease-in-out ${
+          !isMenuToggled ? "z-50 absolute left-0 md:static" : "hidden"
+        }`}
+      >
+        <SideBar isMenuToggled={isMenuToggled} handleToggle={handleToggle}/>
       </div>
-      <div className="h-full w-full ">
+      <div className="flex flex-grow flex-col w-full">
         <TopNavBar handleToggle={handleToggle} />
-        <main className='p-5 '>
-          {children}
-        </main>
+        <main className="p-5 flex-grow">{children}</main>
       </div>
     </div>
   );
