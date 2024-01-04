@@ -1,5 +1,6 @@
 "use client";
 import {
+  Button,
   Pagination,
   Spinner,
   Table,
@@ -9,189 +10,51 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  getKeyValue,
+  useDisclosure,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../AdminLayout";
 import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-export const users = [
-  {
-    key: "1",
-    name: "Tony Reichert",
-    role: "CEO",
-    status: "Active",
-  },
-  {
-    key: "2",
-    name: "Zoey Lang",
-    role: "Technical Lead",
-    status: "Paused",
-  },
-  {
-    key: "3",
-    name: "Jane Fisher",
-    role: "Senior Developer",
-    status: "Active",
-  },
-  {
-    key: "4",
-    name: "William Howard",
-    role: "Community Manager",
-    status: "Vacation",
-  },
-  {
-    key: "5",
-    name: "Emily Collins",
-    role: "Marketing Manager",
-    status: "Active",
-  },
-  {
-    key: "6",
-    name: "Brian Kim",
-    role: "Product Manager",
-    status: "Active",
-  },
-  {
-    key: "7",
-    name: "Laura Thompson",
-    role: "UX Designer",
-    status: "Active",
-  },
-  {
-    key: "8",
-    name: "Michael Stevens",
-    role: "Data Analyst",
-    status: "Paused",
-  },
-  {
-    key: "9",
-    name: "Sophia Nguyen",
-    role: "Quality Assurance",
-    status: "Active",
-  },
-  {
-    key: "10",
-    name: "James Wilson",
-    role: "Front-end Developer",
-    status: "Vacation",
-  },
-  {
-    key: "11",
-    name: "Ava Johnson",
-    role: "Back-end Developer",
-    status: "Active",
-  },
-  {
-    key: "12",
-    name: "Isabella Smith",
-    role: "Graphic Designer",
-    status: "Active",
-  },
-  {
-    key: "13",
-    name: "Oliver Brown",
-    role: "Content Writer",
-    status: "Paused",
-  },
-  {
-    key: "14",
-    name: "Lucas Jones",
-    role: "Project Manager",
-    status: "Active",
-  },
-  {
-    key: "15",
-    name: "Grace Davis",
-    role: "HR Manager",
-    status: "Active",
-  },
-  {
-    key: "16",
-    name: "Elijah Garcia",
-    role: "Network Administrator",
-    status: "Active",
-  },
-  {
-    key: "17",
-    name: "Emma Martinez",
-    role: "Accountant",
-    status: "Vacation",
-  },
-  {
-    key: "18",
-    name: "Benjamin Lee",
-    role: "Operations Manager",
-    status: "Active",
-  },
-  {
-    key: "19",
-    name: "Mia Hernandez",
-    role: "Sales Manager",
-    status: "Paused",
-  },
-  {
-    key: "20",
-    name: "Daniel Lewis",
-    role: "DevOps Engineer",
-    status: "Active",
-  },
-  {
-    key: "21",
-    name: "Amelia Clark",
-    role: "Social Media Specialist",
-    status: "Active",
-  },
-  {
-    key: "22",
-    name: "Jackson Walker",
-    role: "Customer Support",
-    status: "Active",
-  },
-  {
-    key: "23",
-    name: "Henry Hall",
-    role: "Security Analyst",
-    status: "Active",
-  },
-  {
-    key: "24",
-    name: "Charlotte Young",
-    role: "PR Specialist",
-    status: "Paused",
-  },
-  {
-    key: "25",
-    name: "Liam King",
-    role: "Mobile App Developer",
-    status: "Active",
-  },
-];
-
+import CategoryModal from "./CategoryModal";
+import { createCategory, updateCategory } from "./actions/categories.actions";
 const page = () => {
   const { data: session } = useSession();
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [categories, setCategories] = useState<[CategoryType]>();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [categoryTitle, setCategoryTitle] = useState("")
+  const [categoryDescription, setCategoryDescrtiption] = useState("")
+  const [updateCatId, setUpdateCatId] = useState<number>()
+  const clear = () => {
+    setCategoryDescrtiption("")
+    setCategoryTitle("")
+    setUpdateCatId(undefined)
+  }
   const axiosAuth = useAxiosAuth();
-  //   const getCategories = async () => {
-  //     const res = await axiosAuth.get("/categories");
-  //     if (res.status == 200) setCategories(res.data);
-  //   };
+  const handleNew = () => {
+    clear();
+    onOpen();
+  }
+
+
   const deleteCategory = async (id: number) => {
     const res = await axiosAuth.delete(`/categories/${id}`);
     if (res.status == 200) {
     }
   };
-  const handleUpdate = async (category: CategoryType) => {};
+  const getCategories = async () => {
+    const res = await axiosAuth.get("/categories")
+    if (res.status == 200) setCategories(res.data)
+  }
+  const handleUpdate = async (category: CategoryType) => { };
+  
   useEffect(() => {
     const fetchData = async () => {
       setIsFetching(true);
       if (session?.user?.token?.accessToken) {
         try {
-          const res = await axiosAuth.get("/categories");
-          if (res.status === 200) {
-            setCategories(res.data);
-          }
+          getCategories();
         } catch (error) {
           console.error("Error fetching categories:", error);
         } finally {
@@ -200,7 +63,8 @@ const page = () => {
       }
     };
     fetchData();
-  }, [session]);
+  }, [session,categories]);
+
 
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 10;
@@ -215,6 +79,24 @@ const page = () => {
   }, [page, categories]);
   return (
     <AdminLayout>
+      {/* modal for creating and updating the category */}
+      <CategoryModal 
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      categoryTitle={categoryTitle}
+      setCategoryTitle={setCategoryTitle}
+      categoryDescription={categoryDescription}
+      setCategoryDescrtiption={setCategoryDescrtiption}
+      updateCatId={updateCatId}
+      onClose={onClose}
+      clear={clear}
+      axiosAuth={axiosAuth}
+      />
+      <div className="h-10 w-full rounded-md flex justify-end mb-4 ">
+      <Button color="primary" variant="solid" onPress={() => handleNew()}>
+        <i className="ri-add-line"></i> <span> Add Categroy</span>
+      </Button>
+      </div>
       {isFetching ? (
         <div className="w-full h-full flex justify-center items-center">
           <Spinner />
@@ -281,26 +163,26 @@ const page = () => {
             // </Table>
             <Table
               aria-label="Example table with client side pagination"
-                bottomContent={
-                  <div className="flex w-full justify-center">
-                    <Pagination
-                      isCompact
-                      showControls
-                      showShadow
-                      color="primary"
-                      page={page}
-                      total={pages}
-                      initialPage={1}
-                      onChange={(page) => setPage(page)}
-                    />
-                  </div>
-                }
-                classNames={{
-                  wrapper: "min-h-[222px]",
-                }}
-            
+              bottomContent={
+                <div className="flex w-full justify-center">
+                  <Pagination
+                    isCompact
+                    showControls
+                    showShadow
+                    color="primary"
+                    page={page}
+                    total={pages}
+                    initialPage={1}
+                    onChange={(page) => setPage(page)}
+                  />
+                </div>
+              }
+              classNames={{
+                wrapper: "min-h-[222px]",
+              }}
+
             >
-              
+
               <TableHeader>
                 <TableColumn key="categoryTitle" className="lg:w-1/4">
                   Title

@@ -1,26 +1,27 @@
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-
-export const createCategory = async ({ categoryTitle, categoryDescription, clear, axiosAuth }) => {
+export const createCategory = async ({ categoryTitle, categoryDescription, clear, axiosAuth,onClose }) => {
     try {
         const res = await axiosAuth.post("/categories", {
             categoryTitle,
             categoryDescription,
         });
-        return res;
         clear();
+        onClose();
+        return res;
+    
     } catch (error) {
         console.error("Error creating category:", error);
     }
 };
 
-export const updateCategory = async ({ categoryTitle, categoryDescription, updateCatId, clear, axiosAuth }) => {
+export const updateCategory = async ({ categoryTitle, categoryDescription, updateCatId, clear, axiosAuth,onClose }) => {
     try {
         const res = await axiosAuth.put(`/categories/${updateCatId}`, {
             categoryTitle,
             categoryDescription,
         });
-        return res;
         clear()
+        onClose();
+        return res;
     } catch (error) {
         console.error("Error updating category:", error);
     }
